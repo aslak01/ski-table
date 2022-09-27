@@ -2,27 +2,31 @@ export interface Person {
   country: string
   firstName: string
   lastName: string
+  name: string
   shirtNumber: number
   uuid: string
 }
 
-export interface LocationSnapshot {
-  duration: string
+export interface StatusAtDistance {
+  duration?: string
   person: Person
-  rank: number
+  rank?: number
+  timeDifference?: string
+  totalNationCupPoints?: number
+  totalWorldCupPoints?: number
   uuid: string
 }
 
-export interface Locations {
-  '1.1km': LocationSnapshot[]
-  '3.1km': LocationSnapshot[]
-  '5.0km': LocationSnapshot[]
-  '6.1km': LocationSnapshot[]
-  '8.1km': LocationSnapshot[]
-  '10km': LocationSnapshot[]
+export interface Distances {
+  '1.1km': StatusAtDistance[]
+  '3.1km': StatusAtDistance[]
+  '5.0km': StatusAtDistance[]
+  '6.1km': StatusAtDistance[]
+  '8.1km': StatusAtDistance[]
+  '10km': StatusAtDistance[]
 }
 
-export interface Racedata {
+export interface MetaData {
   competitionName: string
   date: string
   name: string
@@ -30,6 +34,6 @@ export interface Racedata {
 }
 
 export interface WorldCupData {
-  racedata: Racedata
-  locations: Locations
+  racedata: MetaData
+  locations: Distances
 }
