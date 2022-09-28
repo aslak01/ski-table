@@ -1,25 +1,11 @@
+<style>
+</style>
+
 <script lang="ts">
   import data from './assets/data.json'
-  import Visualiser from './lib/Visualiser.svelte'
+  import WorldCupComponent from './lib/WorldCupComponent.svelte'
 </script>
 
 <main>
-  <Visualiser {data} />
+  <WorldCupComponent {data} />
 </main>
-
-<style>
-  .logo {
-    height: 6em;
-    padding: 1.5em;
-    will-change: filter;
-  }
-  .logo:hover {
-    filter: drop-shadow(0 0 2em #646cffaa);
-  }
-  .logo.svelte:hover {
-    filter: drop-shadow(0 0 2em #ff3e00aa);
-  }
-  .read-the-docs {
-    color: #888;
-  }
-</style>
