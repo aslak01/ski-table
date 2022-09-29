@@ -23,7 +23,7 @@ module.exports = {
     }
   ],
   settings: {
-    'svelte3/typescript': require('typescript'),
+    'svelte3/typescript': require('typescript')
   },
   plugins: ['svelte3', '@typescript-eslint'],
   ignorePatterns: ['node_modules']
