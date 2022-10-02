@@ -37,3 +37,16 @@ export interface WorldCupData {
   racedata: MetaData
   locations: Distances
 }
+
+export interface PersonWithTimes extends Person {
+  times: number[] | undefined
+}
+
+export type Contestant = Omit<
+  PersonWithTimes,
+  'uuid' | 'firstName' | 'lastName'
+>
+
+export interface Deserialized {
+  [key: string]: Contestant
+}

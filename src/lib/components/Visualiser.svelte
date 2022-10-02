@@ -1,49 +1,57 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import type { Distances } from '../types/definitions'
+  import type { Distances } from '../types'
+  import Piste from './Piste.svelte'
   export let data: Distances
 
-  const countries = data['1.1km'].map(time => time.person.country)
-  const uniqueCountries = [...new Set(countries)]
+  import {
+    convertToDs,
+    deserializeData,
+    convertKeysToPercent
+  } from '../functions'
 
-  const potentialCountries = { Norway, Sweden }
+  const pctAtIndex = Object.keys(data).map((k) =>
+    convertKeysToPercent(k)
+  )
+  pctAtIndex.unshift(0)
+  console.log(pctAtIndex)
+  const timesInDsAtFinish = data['10km']
+    .map((time) => convertToDs(time.duration))
+    .filter((n) => typeof n !== 'undefined')
+  const slowestTime = Math.max(...(timesInDsAtFinish as number[]))
+  const fastestTime = Math.min(...(timesInDsAtFinish as number[]))
 
-  import Norway from '~icons/emojione-v1/flag-for-norway'
-  import Sweden from '~icons/emojione-v1/flag-for-sweden'
+  const contestants = deserializeData(data)
+
+  console.log(contestants)
+
+  let progress = 0
+  let playing = false
+  let max = 100
+
+  const start = new Date().getTime()
+
+  function getElapsed() {
+    return new Date().getTime() - start
+  }
+
+  let elapsed = getElapsed()
 
   onMount(() => {
-    console.log(data)
-    console.log(uniqueCountries)
+    let rid = requestAnimationFrame(function update() {
+      elapsed = getElapsed()
+      rid = requestAnimationFrame(update)
+    })
+    return () => cancelAnimationFrame(rid)
   })
 </script>
 
-<Norway />
-{#each Object.entries(data) as [key, lines]}
-  {key}
-  <div class="lines">
-    {#each lines as line}
-      {@const country = line.person.country}
-      <div class="line">
-        {line.duration}
-        {line.person.name}
-        {#if country === 'Norway' || country == 'Sweden'}
-          <svelte:component this={potentialCountries[country]} />
-        {/if}
-        {line.person.country}
-      </div>
-    {/each}
-  </div>
-{/each}
-
-<style>
-  .lines {
-    display: block;
-    max-width: 100;
-    overflow-wrap: break-word;
-    color: var(--yellow-2);
-  }
-  .line {
-    border: 1px white solid;
-    margin-bottom: 5px;
-  }
-</style>
+<Piste
+  {contestants}
+  {pctAtIndex}
+  slowestTime={fastestTime}
+  {playing}
+  {elapsed}
+  {progress}
+  {max}
+/>
