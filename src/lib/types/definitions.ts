@@ -38,12 +38,15 @@ export interface WorldCupData {
   locations: Distances
 }
 
-export interface PersonWithTimes extends Person {
+export interface PersonWithData extends Person {
   times: number[] | undefined
+  rank?: number | undefined
+  wcPts?: number | undefined
+  ncPts?: number | undefined
 }
 
 export type Contestant = Omit<
-  PersonWithTimes,
+  PersonWithData,
   'uuid' | 'firstName' | 'lastName'
 >
 

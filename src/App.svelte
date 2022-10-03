@@ -9,7 +9,8 @@
 
 <style>
   main {
-    max-width: 500px;
-    margin-block: 100px;
+    max-width: 1000px;
+    margin-block: 50px;
+    width: 550px;
   }
 </style>

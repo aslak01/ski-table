@@ -1,57 +1,119 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
   import type { Distances } from '../types'
-  import Piste from './Piste.svelte'
-  export let data: Distances
-
   import {
     convertToDs,
+    lerpArrSegment,
     deserializeData,
     convertKeysToPercent
   } from '../functions'
+  import Contestant from './Contestant.svelte'
+  export let data: Distances
+  export let progress: number
+  export let framesTo100: number
+  export let debug: boolean
 
   const pctAtIndex = Object.keys(data).map((k) =>
     convertKeysToPercent(k)
   )
   pctAtIndex.unshift(0)
-  console.log(pctAtIndex)
+
   const timesInDsAtFinish = data['10km']
     .map((time) => convertToDs(time.duration))
     .filter((n) => typeof n !== 'undefined')
-  const slowestTime = Math.max(...(timesInDsAtFinish as number[]))
   const fastestTime = Math.min(...(timesInDsAtFinish as number[]))
+  const slowestTime = Math.max(...(timesInDsAtFinish as number[]))
 
   const contestants = deserializeData(data)
 
-  console.log(contestants)
+  const transformTimes = (
+    ogTimes: number[] | undefined
+  ): number[] => {
+    let times = []
+    // let relativeTimes = []
+    if (typeof ogTimes !== 'undefined') {
+      for (const [i, t] of ogTimes.entries()) {
+        const ts = ogTimes
+        if (typeof ogTimes[i + 1] === 'undefined') break
+        const segment = lerpArrSegment(
+          t,
+          ts[i + 1],
+          pctAtIndex[i] * (framesTo100 / 100),
+          pctAtIndex[i + 1] * (framesTo100 / 100)
+        )
+        times.push(...segment)
+      }
+    }
 
-  let progress = 0
-  let playing = false
-  let max = 100
-
-  const start = new Date().getTime()
-
-  function getElapsed() {
-    return new Date().getTime() - start
+    // relativeTimes = times.map((t) => t / fastestTime)
+    // return relativeTimes
+    return times
   }
-
-  let elapsed = getElapsed()
-
-  onMount(() => {
-    let rid = requestAnimationFrame(function update() {
-      elapsed = getElapsed()
-      rid = requestAnimationFrame(update)
-    })
-    return () => cancelAnimationFrame(rid)
-  })
 </script>
 
-<Piste
-  {contestants}
-  {pctAtIndex}
-  slowestTime={fastestTime}
-  {playing}
-  {elapsed}
-  {progress}
-  {max}
-/>
+<div class="wrapper">
+  {#if debug}
+    <div class="info">
+      {progress}
+    </div>
+  {/if}
+  <div class="indicators">
+    <div class="check" />
+    <div class="check" />
+    <div class="check" />
+    <div class="check" />
+    <div class="check" />
+    <div class="check" />
+  </div>
+  <div class="piste">
+    {#each Object.entries(contestants) as [uuid, contestant]}
+      {@const times = transformTimes(contestant.times)}
+      <Contestant
+        {uuid}
+        {contestant}
+        {times}
+        {progress}
+        {fastestTime}
+      />
+    {/each}
+  </div>
+</div>
+
+<style>
+  .wrapper {
+    display: grid;
+    grid-template-columns: 10% 80% 10%;
+    grid-template-rows: 100%;
+    height: 800px;
+    width: 100%;
+    overflow: hidden;
+    background: black;
+  }
+  .info {
+    position: absolute;
+    color: white;
+    top: 5px;
+    right: 10px;
+  }
+  .piste {
+    grid-area: 1 / 2 / 1 / 2;
+    z-index: 2;
+  }
+  .indicators {
+    grid-area: 1 / 2 / 1 / 2;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 11% 20% 19% 11% 20% 19%;
+    z-index: 1;
+  }
+  .check {
+    border-right: 1px dotted white;
+    height: 100%;
+    opacity: 0.5;
+  }
+  .check:first-of-type {
+    border-left: 1px dashed white;
+  }
+  .check:last-of-type {
+    border-right: 1px dashed white;
+  }
+</style>

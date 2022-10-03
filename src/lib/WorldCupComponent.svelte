@@ -1,30 +1,70 @@
 <script lang="ts">
+  import type { WorldCupData } from './types'
+  // import { onMount } from 'svelte'
+  import { clamp } from './functions'
   import Heading from './components/Heading.svelte'
   import Visualiser from './components/Visualiser.svelte'
-  import type { WorldCupData } from './types'
   export let data: WorldCupData
-  // const countries = data['1.1km'].map((time) => time.person.country)
-  // const uniqueCountries = [...new Set(countries)]
 
-  // const uniqueContestants1 = data['1.1km'].map(
-  //   (time) => time.person.uuid
-  // )
-  // const uniqueContestants2 = data['10km'].map(
-  //   (time) => time.person.uuid
-  // )
-  // const stringArrSharesAllVals = (
-  //   array1: string[],
-  //   array2: string[]
-  // ) =>
-  //   array1.length === array2.length &&
-  //   array1.every((value) => array2.includes(value))
-  //
-  // console.log(
-  //   'contestant list is equal at 1,1km & 10km',
-  //   stringArrSharesAllVals(uniqueContestants1, uniqueContestants2)
-  // )
-  // const potentialCountries = { Norway, Sweden }
+  let debug = true
+  let startTime: null | number = null
+  let timeElapsed = 0
+  let pauseTime = 0
+  let pause = false
+  let running = false
+  let progress = 0
+  let framesTo100 = 2000
+
+  const startOrPause = () => {
+    running = !running
+    pause = !pause
+  }
+  const start = () => {
+    running = true
+    requestAnimationFrame(loop)
+  }
+  const restart = () => {
+    timeElapsed = 0
+    startTime = null
+    pauseTime = 0
+    running = true
+    pause = false
+    requestAnimationFrame(loop)
+  }
+
+  $: progress = Math.floor(clamp(timeElapsed, 0, framesTo100))
+
+  function loop(timeStamp: number) {
+    if (startTime === null) {
+      startTime = timeStamp
+    }
+    if (running && pause === false) {
+      timeElapsed = timeStamp - startTime - pauseTime
+      requestAnimationFrame(loop)
+    } else if (running && pause) {
+      pauseTime = timeStamp - startTime - timeElapsed
+      timeElapsed = timeStamp - startTime - pauseTime
+      pause = false
+      requestAnimationFrame(loop)
+    }
+  }
+
+  // onMount(() => {
+  // })
 </script>
 
+{#if running === false && timeElapsed < framesTo100}
+  <button on:click={start}>Play</button>
+{:else if timeElapsed < framesTo100}
+  <button on:click={startOrPause}>
+    {#if pause}
+      Continue
+    {:else}
+      Pause
+    {/if}
+  </button>
+{:else}
+  <button on:click={restart}>Replay</button>
+{/if}
 <Heading data={data.racedata} />
-<Visualiser data={data.locations} />
+<Visualiser data={data.locations} {progress} {debug} {framesTo100} />

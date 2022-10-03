@@ -24,12 +24,15 @@ export const deserializeData = (data: Distances): Deserialized => {
   const deserialized: Deserialized = {}
 
   // init object
-  data['1.1km'].map(
+  data['10km'].map(
     (s) =>
       (deserialized[s.person.uuid] = {
         name: s.person.name,
         shirtNumber: s.person.shirtNumber,
         country: s.person.country,
+        rank: s.rank,
+        wcPts: s.totalWorldCupPoints,
+        ncPts: s.totalNationCupPoints,
         times: [] as number[] | undefined
       })
   )
@@ -47,7 +50,7 @@ export const deserializeData = (data: Distances): Deserialized => {
     }
   }
 
-  // add starting point
+  // add start
   for (const contestant of Object.values(deserialized)) {
     if (typeof contestant.times === 'undefined') continue
     contestant.times.unshift(0)

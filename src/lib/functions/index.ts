@@ -1,5 +1,6 @@
 export * from './interpolate'
 export * from './dataSpecific'
+export * from './events'
 
 export const clamp = (n: number, min: number, max: number) => {
   if (n < min) return min
