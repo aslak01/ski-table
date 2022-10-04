@@ -13,7 +13,7 @@
   let pause = false
   let running = false
   let progress = 0
-  let framesTo100 = 2000
+  let framesTo100 = 20000
 
   const startOrPause = () => {
     running = !running

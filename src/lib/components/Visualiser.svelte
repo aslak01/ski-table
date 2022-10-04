@@ -1,8 +1,8 @@
 <script lang="ts">
   import type { Distances } from '../types'
   import {
-    convertToDs,
-    lerpArrSegment,
+    // convertToDs,
+    // lerpArrSegment,
     deserializeData,
     convertKeysToPercent
   } from '../functions'
@@ -17,37 +17,37 @@
   )
   pctAtIndex.unshift(0)
 
-  const timesInDsAtFinish = data['10km']
-    .map((time) => convertToDs(time.duration))
-    .filter((n) => typeof n !== 'undefined')
-  const fastestTime = Math.min(...(timesInDsAtFinish as number[]))
-  const slowestTime = Math.max(...(timesInDsAtFinish as number[]))
+  // const timesInDsAtFinish = data['10km']
+  //   .map((time) => convertToDs(time.duration))
+  //   .filter((n) => typeof n !== 'undefined')
+  // const fastestTime = Math.min(...(timesInDsAtFinish as number[]))
+  // const slowestTime = Math.max(...(timesInDsAtFinish as number[]))
 
   const contestants = deserializeData(data)
 
-  const transformTimes = (
-    ogTimes: number[] | undefined
-  ): number[] => {
-    let times = []
-    // let relativeTimes = []
-    if (typeof ogTimes !== 'undefined') {
-      for (const [i, t] of ogTimes.entries()) {
-        const ts = ogTimes
-        if (typeof ogTimes[i + 1] === 'undefined') break
-        const segment = lerpArrSegment(
-          t,
-          ts[i + 1],
-          pctAtIndex[i] * (framesTo100 / 100),
-          pctAtIndex[i + 1] * (framesTo100 / 100)
-        )
-        times.push(...segment)
-      }
-    }
-
-    // relativeTimes = times.map((t) => t / fastestTime)
-    // return relativeTimes
-    return times
-  }
+  // Interpolation red herring...
+  // const transformTimes = (
+  //   ogTimes: number[] | undefined
+  // ): number[] => {
+  //   let times = []
+  //   let relativeTimes = []
+  //   if (typeof ogTimes !== 'undefined') {
+  //     for (const [i, t] of ogTimes.entries()) {
+  //       const ts = ogTimes
+  //       if (typeof ogTimes[i + 1] === 'undefined') break
+  //       const segment = lerpArrSegment(
+  //         t,
+  //         ts[i + 1],
+  //         pctAtIndex[i],
+  //         pctAtIndex[i + 1]
+  //       )
+  //       times.push(...segment)
+  //     }
+  //   }
+  //   // relativeTimes = times.map((t) => t / fastestTime)
+  //   return times
+  //   // return times
+  // }
 </script>
 
 <div class="wrapper">
@@ -66,14 +66,7 @@
   </div>
   <div class="piste">
     {#each Object.entries(contestants) as [uuid, contestant]}
-      {@const times = transformTimes(contestant.times)}
-      <Contestant
-        {uuid}
-        {contestant}
-        {times}
-        {progress}
-        {fastestTime}
-      />
+      <Contestant {uuid} {contestant} {framesTo100} {progress} />
     {/each}
   </div>
 </div>
@@ -83,7 +76,7 @@
     display: grid;
     grid-template-columns: 10% 80% 10%;
     grid-template-rows: 100%;
-    height: 800px;
+    height: 1000px;
     width: 100%;
     overflow: hidden;
     background: black;

@@ -5,12 +5,31 @@
   export let contestant: Contestant
   export let uuid: string
   export let progress: number
-  export let times: number[] | undefined
-  export let fastestTime: number
+  export let framesTo100: number
+
+  const times = contestant.times ? contestant.times : [0]
+  const maxTime = times[times?.length - 1]
+  const relativeMax = maxTime / framesTo100
+  const localFrameCount = framesTo100 * relativeMax
   // console.log(times)
-  $: progressed = times?.length ? times[progress] * 100 : 0
+  $: localFrameCount > progress && progressed <= 100
+    ? (progressed += 1 - relativeMax)
+    : ''
+  $: progressed = 0
+
+  $: finished = Math.floor(progressed) === 100 ? true : false
+
   let mounted = false
   let hover = false
+  $: if (uuid === '89967c80-6a47-4b13-887b-9f39871954f8') {
+    console.log(contestant.times)
+    console.log('localFrameCount', localFrameCount)
+    console.log('relativeMax', relativeMax)
+    console.log('finished', finished)
+    // console.log('progress', progress)
+    // console.log('percentDone', percentDone)
+  }
+  // $: console.log(progressed)
   // $: console.log(
   //   uuid === '89967c80-6a47-4b13-887b-9f39871954f8' ? progressed : ''
   // )
@@ -31,7 +50,7 @@
   >
     <!-- <div class="number"> -->
     <!-- </div> -->
-    {#if isNaN(progressed)}
+    {#if finished}
       <div class="number">{contestant.rank}</div>
     {/if}
     <div class="name">
@@ -60,9 +79,9 @@
     background: white;
     border-radius: 999px;
     color: black;
-    height: 15px;
+    height: 11px;
+    width: 11px;
     line-height: 15px;
-    width: 15px;
     margin-left: 5px;
   }
   .track {

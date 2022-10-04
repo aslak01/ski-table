@@ -13,7 +13,10 @@ export const lerpArrSegment = (
   const arrSegment = []
   const segmentLength = maxIndex - minIndex
   for (let i = 0; i < segmentLength; i++) {
-    arrSegment.push(linearInterpolate(min, max, i / segmentLength))
+    const number = Math.floor(
+      linearInterpolate(min, max, i / segmentLength)
+    )
+    arrSegment.push(number)
   }
   return arrSegment
 }
