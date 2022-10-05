@@ -114,7 +114,7 @@
     </div>
 
     <div class="piste">
-      {#each contestants as contestant}
+      {#each contestants as contestant (contestant.uuid)}
         {@const flagKey = contestant.country}
         <ContestantComp
           {contestant}
