@@ -1,42 +1,38 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import type { Contestant } from '../types'
-  import { onhover } from '../functions'
+  import { onhover, clamp } from '../functions'
   export let contestant: Contestant
-  export let uuid: string
   export let progress: number
   export let framesTo100: number
+  export let slowestTime: number
 
   const times = contestant.times ? contestant.times : [0]
   const maxTime = times[times?.length - 1]
-  const relativeMax = maxTime / framesTo100
-  const localFrameCount = framesTo100 * relativeMax
-  // console.log(times)
-  $: localFrameCount > progress && progressed <= 100
-    ? (progressed += 1 - relativeMax)
-    : ''
-  $: progressed = 0
+  const speedFactor = maxTime / slowestTime
+  const localFrameCount = framesTo100 * speedFactor
 
-  $: finished = Math.floor(progressed) === 100 ? true : false
+  $: raceProgress = (progress / localFrameCount) * 100
+  $: progressed = contestant.rank ? clamp(raceProgress, 0, 100) : 0
+  $: finished = progressed === 100 ? true : false
 
+  // $: if (
+  //   contestant.uuid === '89967c80-6a47-4b13-887b-9f39871954f8' ||
+  //   contestant.uuid === 'a7797838-6fc5-4615-9143-67bc3c646dc3'
+  // ) {
+  //   console.log(contestant.times)
+  //   console.log('slowestTime', slowestTime)
+  //   console.log('localFrameCount', localFrameCount)
+  //   console.log('finished', finished)
+  //   console.log('speedFactor', speedFactor)
+  //   // console.log('progress', progress)
+  //   // console.log('percentDone', percentDone)
+  // }
   let mounted = false
   let hover = false
-  $: if (uuid === '89967c80-6a47-4b13-887b-9f39871954f8') {
-    console.log(contestant.times)
-    console.log('localFrameCount', localFrameCount)
-    console.log('relativeMax', relativeMax)
-    console.log('finished', finished)
-    // console.log('progress', progress)
-    // console.log('percentDone', percentDone)
-  }
-  // $: console.log(progressed)
-  // $: console.log(
-  //   uuid === '89967c80-6a47-4b13-887b-9f39871954f8' ? progressed : ''
-  // )
+
   onMount(() => {
     mounted = true
-    // console.log(times)
-    // console.log(relativeTimes)
   })
 </script>
 
@@ -44,22 +40,24 @@
   <div
     class="contestant"
     class:hover
-    id={uuid}
     style="--progress: {progressed}%"
     use:onhover={() => (hover = !hover)}
   >
-    <!-- <div class="number"> -->
-    <!-- </div> -->
     {#if finished}
-      <div class="number">{contestant.rank}</div>
+      <div
+        class="number"
+        class:gold={contestant.rank === 1}
+        class:silver={contestant.rank === 2}
+        class:bronze={contestant.rank === 3}
+      >
+        {contestant.rank}
+      </div>
     {/if}
     <div class="name">
       {contestant.shirtNumber}
       {contestant.name}
     </div>
     <div class="track" />
-    <!-- {#if hover} -->
-    <!-- {/if} -->
   </div>
 {/if}
 
@@ -68,25 +66,39 @@
     cursor: pointer;
   }
   .contestant {
+    position: relative;
     font-size: 8pt;
-    height: 12px;
+    height: 15px;
+    line-height: 15px;
     width: var(--progress);
     display: flex;
     align-items: center;
     flex-direction: row-reverse;
   }
   .number {
+    position: absolute;
+    right: -20px;
     background: white;
     border-radius: 999px;
     color: black;
-    height: 11px;
-    width: 11px;
+    height: 15px;
+    width: 15px;
+    font-size: 7pt;
+    padding: 0;
     line-height: 15px;
-    margin-left: 5px;
+  }
+  .number.gold {
+    background: gold;
+  }
+  .number.silver {
+    background: silver;
+  }
+  .number.bronze {
+    background: #cd7f32;
   }
   .track {
     width: 100%;
-    border-block: 1px solid white;
+    border-block: 1px solid #ffffff80;
     height: 40%;
   }
   .hover .track {
@@ -101,8 +113,9 @@
   .name {
     white-space: nowrap;
     color: white;
-    background: black;
-    padding-inline: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
+    border-right: 1px solid white;
   }
   .hover .name {
     font-weight: bold;

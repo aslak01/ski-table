@@ -21,29 +21,51 @@ export const convertKeysToPercent = (d: string): number => {
   return number
 }
 export const deserializeData = (data: Distances): Deserialized => {
-  const deserialized: Deserialized = {}
-
+  const deserialized: Deserialized = {
+    contestants: [],
+    countries: [],
+    slowestTime: 0
+  }
+  const countries: string[] = []
+  const times: number[] = []
   // init object
-  data['10km'].map(
-    (s) =>
-      (deserialized[s.person.uuid] = {
-        name: s.person.name,
-        shirtNumber: s.person.shirtNumber,
-        country: s.person.country,
-        rank: s.rank,
-        wcPts: s.totalWorldCupPoints,
-        ncPts: s.totalNationCupPoints,
-        times: [] as number[] | undefined
-      })
+  data['10km'].map((s) => {
+    deserialized.contestants.push({
+      name: s.person.name,
+      uuid: s.person.uuid,
+      shirtNumber: s.person.shirtNumber,
+      country: s.person.country,
+      rank: s.rank,
+      wcPts: s.totalWorldCupPoints,
+      ncPts: s.totalNationCupPoints,
+      times: [] as number[] | undefined
+    })
+    countries.push(s.person.country)
+    const time = convertToDs(s.duration)
+    if (typeof time !== 'undefined') {
+      times.push(time)
+    }
+  })
+
+  deserialized.slowestTime = Math.max(
+    ...times.filter((n) => typeof n !== 'undefined')
   )
+
+  const uniqueCountries = [...new Set(countries)]
+  deserialized.countries = uniqueCountries
 
   // add converted durations at measurement points
   for (const statuses of Object.values(data)) {
     for (const status of statuses as StatusAtDistance[]) {
       const time = convertToDs(status.duration)
-      const times = deserialized[status.person.uuid].times
+      const uuid = status.person.uuid
+      const contestant = deserialized.contestants.find(
+        (c) => c.uuid === uuid
+      )
+      if (typeof contestant === 'undefined') continue
+      const times = contestant.times
       if (typeof time === 'undefined' || !times) {
-        deserialized[status.person.uuid].times = undefined
+        contestant.times = undefined
         continue
       }
       times.push(time)
@@ -51,7 +73,7 @@ export const deserializeData = (data: Distances): Deserialized => {
   }
 
   // add start
-  for (const contestant of Object.values(deserialized)) {
+  for (const contestant of deserialized.contestants) {
     if (typeof contestant.times === 'undefined') continue
     contestant.times.unshift(0)
   }

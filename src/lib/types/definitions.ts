@@ -47,9 +47,11 @@ export interface PersonWithData extends Person {
 
 export type Contestant = Omit<
   PersonWithData,
-  'uuid' | 'firstName' | 'lastName'
+  'firstName' | 'lastName'
 >
 
 export interface Deserialized {
-  [key: string]: Contestant
+  contestants: Contestant[]
+  countries: string[]
+  slowestTime: number
 }

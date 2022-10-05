@@ -1,10 +1,10 @@
 <script lang="ts">
   import data from './assets/data.json'
-  import WorldCupComponent from './lib/WorldCupComponent.svelte'
+  import Visualiser from './lib/components/Visualiser.svelte'
 </script>
 
 <main>
-  <WorldCupComponent {data} />
+  <Visualiser {data} />
 </main>
 
 <style>
