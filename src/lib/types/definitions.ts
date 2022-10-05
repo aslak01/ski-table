@@ -1,11 +1,22 @@
+import type { Flags } from '../components/flags'
+
 export interface Person {
-  country: string
+  country: Flags
   firstName: string
   lastName: string
   name: string
   shirtNumber: number
   uuid: string
 }
+
+export interface PersonWithData extends Person {
+  times: number[] | undefined
+  rank?: number | undefined
+  wcPts?: number | undefined
+  ncPts?: number | undefined
+}
+
+export type Contestant = Omit<PersonWithData, 'firstName'>
 
 export interface StatusAtDistance {
   duration?: string
@@ -37,18 +48,6 @@ export interface WorldCupData {
   racedata: MetaData
   locations: Distances
 }
-
-export interface PersonWithData extends Person {
-  times: number[] | undefined
-  rank?: number | undefined
-  wcPts?: number | undefined
-  ncPts?: number | undefined
-}
-
-export type Contestant = Omit<
-  PersonWithData,
-  'firstName' | 'lastName'
->
 
 export interface Deserialized {
   contestants: Contestant[]

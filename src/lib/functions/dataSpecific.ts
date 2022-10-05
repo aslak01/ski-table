@@ -30,17 +30,28 @@ export const deserializeData = (data: Distances): Deserialized => {
   const times: number[] = []
   // init object
   data['10km'].map((s) => {
+    const country =
+      // @ts-expect-error (due to import of flags)
+      s.person.country === 'Czech Republic'
+        ? 'Czechia'
+        : s.person.country
     deserialized.contestants.push({
       name: s.person.name,
+      lastName: s.person.lastName,
       uuid: s.person.uuid,
       shirtNumber: s.person.shirtNumber,
-      country: s.person.country,
+      country,
       rank: s.rank,
       wcPts: s.totalWorldCupPoints,
       ncPts: s.totalNationCupPoints,
       times: [] as number[] | undefined
     })
-    countries.push(s.person.country)
+    countries.push(
+      // @ts-expect-error (due to import of flags)
+      s.person.country === 'Czech Republic'
+        ? 'Czechia'
+        : s.person.country
+    )
     const time = convertToDs(s.duration)
     if (typeof time !== 'undefined') {
       times.push(time)

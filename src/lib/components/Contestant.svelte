@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import type { Contestant } from '../types'
-  import { onhover, clamp } from '../functions'
+  import { onhover, clamp, dsToHumandate } from '../functions'
   export let contestant: Contestant
   export let progress: number
   export let framesTo100: number
@@ -13,7 +13,10 @@
   const localFrameCount = framesTo100 * speedFactor
 
   $: raceProgress = (progress / localFrameCount) * 100
-  $: progressed = contestant.rank ? clamp(raceProgress, 0, 100) : 0
+  $: progressed =
+    contestant.rank && !isNaN(raceProgress)
+      ? clamp(raceProgress, 0, 100)
+      : 0
   $: finished = progressed === 100 ? true : false
 
   // $: if (
@@ -44,6 +47,7 @@
     use:onhover={() => (hover = !hover)}
   >
     {#if finished}
+      <div class="time">{dsToHumandate(maxTime)}</div>
       <div
         class="number"
         class:gold={contestant.rank === 1}
@@ -53,6 +57,9 @@
         {contestant.rank}
       </div>
     {/if}
+    <div class="flag">
+      <slot />
+    </div>
     <div class="name">
       {contestant.shirtNumber}
       {contestant.name}
@@ -62,14 +69,17 @@
 {/if}
 
 <style>
+  :root {
+    --line-height: 15px;
+  }
   .hover {
     cursor: pointer;
   }
   .contestant {
     position: relative;
     font-size: 8pt;
-    height: 15px;
-    line-height: 15px;
+    height: var(--line-height);
+    line-height: var(--line-height);
     width: var(--progress);
     display: flex;
     align-items: center;
@@ -78,14 +88,15 @@
   .number {
     position: absolute;
     right: -20px;
-    background: white;
+    background: var(--indigo-1);
     border-radius: 999px;
     color: black;
-    height: 15px;
-    width: 15px;
+    height: var(--line-height);
+    width: var(--line-height);
     font-size: 7pt;
-    padding: 0;
-    line-height: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   .number.gold {
     background: gold;
@@ -95,6 +106,10 @@
   }
   .number.bronze {
     background: #cd7f32;
+  }
+  .time {
+    position: absolute;
+    right: -80px;
   }
   .track {
     width: 100%;
@@ -115,7 +130,14 @@
     color: white;
     padding-left: 5px;
     padding-right: 5px;
-    border-right: 1px solid white;
+  }
+  .flag {
+    width: var(--line-height);
+    height: var(--line-height);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   .hover .name {
     font-weight: bold;

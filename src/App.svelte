@@ -10,7 +10,7 @@
 <style>
   main {
     max-width: 1000px;
+    margin-inline: auto;
     margin-block: 50px;
-    width: 550px;
   }
 </style>

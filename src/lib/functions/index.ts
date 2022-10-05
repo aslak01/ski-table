@@ -12,3 +12,13 @@ export const minutesToDs = (m: string | number): number =>
   Number(m) * 60 * 10
 export const secondsToDs = (s: string | number): number =>
   Number(s) * 10
+
+export const dsToHumandate = (ds: number): string => {
+  const milliseconds = ds * 100
+  const mydate = new Date(milliseconds)
+  const minutes = mydate.getUTCMinutes()
+  const seconds = mydate.getUTCSeconds()
+  const deciseconds = Math.floor(mydate.getUTCMilliseconds() / 100)
+  const humandate = `${minutes}:${seconds},${deciseconds}s`
+  return humandate
+}

@@ -1,12 +1,12 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import type { WorldCupData } from '../types'
-  import { deserializeData, clamp, convertToDs } from '../functions'
-  import Contestant from './Contestant.svelte'
+  import type { WorldCupData, Contestant } from '../types'
+  import { deserializeData, clamp, dsToHumandate } from '../functions'
+  import { flags } from './flags'
+  import ContestantComp from './Contestant.svelte'
   import Heading from './Heading.svelte'
   export let data: WorldCupData
 
-  let debug = true
   let startTime: null | number = null
   let timeElapsed = 0
   let pauseTime = 0
@@ -14,6 +14,11 @@
   let running = false
   let progress = 0
   let framesTo100 = 10000
+
+  const deserializedData = deserializeData(data.locations)
+  const slowestTime = deserializedData.slowestTime
+
+  const raceTimeFactor = slowestTime / framesTo100
 
   const startOrPause = () => {
     running = !running
@@ -35,6 +40,7 @@
   }
 
   $: progress = Math.floor(clamp(timeElapsed, 0, framesTo100))
+  $: humanDuration = dsToHumandate(progress * raceTimeFactor)
 
   function loop(timeStamp: number) {
     if (startTime === null) {
@@ -50,74 +56,50 @@
       requestAnimationFrame(loop)
     }
   }
+  const countries = deserializedData.countries
+  let selectedCountries: string[] = countries
 
-  const deserializedData = deserializeData(data.locations)
-  const slowestTime = deserializedData.slowestTime
+  let sortKey: keyof Contestant = 'rank'
 
-  const countryList = deserializedData.countries
-  let selectedCountries: string[] = []
-  let contestants: Contestant[] = []
-  let unselectedCountries: string[] = []
-  $: if (mounted) {
-    selectedCountries = deserializedData.countries
-    contestants = contestants.filter(
-      (c) => selectedCountries.includes(c.country) === true
-    )
+  $: contestants = deserializedData.contestants
+    .filter((c) => selectedCountries.indexOf(c.country) >= 0)
+    .sort((a, b) => {
+      const one = a[sortKey]
+      const two = b[sortKey]
+      if (typeof one === 'undefined' || typeof two === 'undefined')
+        return 0
+      if (one > two) return 1
+      if (one < two) return -1
+      return 0
+    })
 
-    unselectedCountries = countryList.filter(
-      (c) => selectedCountries.includes(c) === false
-    )
-    console.log(selectedCountries)
-  }
-  const addCountry = (country: string) => {
-    let copy = selectedCountries
-    copy.push(country)
-    copy = [...new Set(copy)]
-    selectedCountries = copy
-  }
-  const removeCountry = (country: string) => {
-    const index = selectedCountries.indexOf(country)
-    if (index > 0) {
-      selectedCountries.splice(index, 1)
-      // unselectedCountries.push(country)
-    }
-
-    console.log('removing', country, index)
-  }
   let mounted = false
   onMount(() => (mounted = true))
 </script>
 
+<Heading
+  data={data.racedata}
+  {running}
+  {timeElapsed}
+  {framesTo100}
+  {pause}
+  on:toggle={startOrPause}
+  on:start={startRace}
+  on:replay={restart}
+  bind:sortKey
+  bind:progress
+  bind:selectedCountries
+/>
 {#if mounted}
-  {#each selectedCountries as country}
-    <button on:click={() => removeCountry(country)}>{country}</button>
-  {/each}
-  {#each unselectedCountries as country}
-    <button on:click={() => addCountry(country)}>{country}</button>
-  {/each}
-  <Heading
-    data={data.racedata}
-    {running}
-    {timeElapsed}
-    {framesTo100}
-    {pause}
-    on:toggle={startOrPause}
-    on:start={startRace}
-    on:replay={restart}
-  />
   <div class="wrapper" style="--heightFactor: {contestants.length}">
-    {#if debug}
-      <div class="info">
-        {progress}
-      </div>
-    {/if}
+    <div class="time">Time: {humanDuration}</div>
     <div class="indicator-labels">
-      <div class="check">START</div>
-      <div class="check">1,1 km</div>
-      <div class="check">3,1 km</div>
-      <div class="check">5,0 km</div>
-      <div class="check">6,1 km</div>
-      <div class="check">
+      <div class="label"><span>START</span></div>
+      <div class="label"><span>1,1 km</span></div>
+      <div class="label"><span>3,1 km</span></div>
+      <div class="label"><span>5,0 km</span></div>
+      <div class="label"><span>6,1 km</span></div>
+      <div class="label">
         <span>8,1 km</span>
         <span>FINISH</span>
       </div>
@@ -130,14 +112,18 @@
       <div class="check" />
       <div class="check" />
     </div>
+
     <div class="piste">
       {#each contestants as contestant}
-        <Contestant
+        {@const flagKey = contestant.country}
+        <ContestantComp
           {contestant}
           {framesTo100}
           {progress}
           {slowestTime}
-        />
+        >
+          <svelte:component this={flags[flagKey]} />
+        </ContestantComp>
       {/each}
     </div>
   </div>
@@ -146,29 +132,43 @@
 <style>
   .wrapper {
     display: grid;
-    grid-template-columns: 10% 80% 10%;
+    grid-template-columns: 15% 75% 10%;
     grid-template-rows: 15px 15px 100%;
     height: calc(calc(var(--heightFactor) * 15.5px) + 35px);
     width: 100%;
     overflow: hidden;
     background: black;
   }
-  .info {
-    position: absolute;
-    color: white;
-    top: 5px;
-    right: 10px;
+  .time {
+    font-size: 14pt;
+    padding: 5px;
+    margin-left: 10px;
   }
   .piste {
     grid-area: 3 / 2 / 3 / 2;
     z-index: 2;
   }
   .indicator-labels {
-    grid-area: 1 / 2 / 2 / 2;
+    grid-area: 1 / 2 / 1 / 2;
     height: 100%;
     display: grid;
     grid-template-columns: 11% 20% 19% 11% 20% 19%;
     z-index: 1;
+    color: white;
+    font-size: 8pt;
+    text-align: left;
+    position: relative;
+  }
+  .indicator-labels .label {
+    position: relative;
+  }
+  .indicator-labels .label span:first-of-type {
+    position: absolute;
+    left: -15px;
+  }
+  .indicator-labels .label span:last-of-type {
+    position: absolute;
+    right: -18px;
   }
   .indicators {
     grid-area: 2 / 2 / 4 / 2;
@@ -181,9 +181,6 @@
     border-right: 1px dotted white;
     height: 100%;
     opacity: 0.5;
-    color: white;
-    font-size: 8pt;
-    text-align: left;
   }
   .check:first-of-type {
     border-left: 1px dashed white;
