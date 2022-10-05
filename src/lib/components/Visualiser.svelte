@@ -131,6 +131,7 @@
 
 <style>
   .wrapper {
+    padding-top: 10px;
     display: grid;
     grid-template-columns: 15% 75% 10%;
     grid-template-rows: 15px 15px 100%;
