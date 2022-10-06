@@ -141,9 +141,10 @@
     background: black;
   }
   .time {
-    font-size: 14pt;
+    font-size: 12pt;
     padding: 5px;
     margin-left: 10px;
+    white-space: nowrap;
   }
   .piste {
     grid-area: 3 / 2 / 3 / 2;
