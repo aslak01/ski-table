@@ -44,15 +44,15 @@
   .countryselector {
     display: grid;
     grid-template-columns: 1fr 1fr;
+    gap: 3rem;
     font-size: 16pt;
     line-height: var(--font-lineheight-2);
-    gap: 3rem;
   }
   button {
+    outline: 0;
+    border: 0;
     background: transparent;
     color: var(--indigo-0);
-    border: 0;
-    outline: 0;
     font-size: 16pt;
   }
   button:hover {

@@ -39,6 +39,6 @@ export const flags = {
   Czechia,
   Ukraine,
   Estonia,
-  Armenia
+  Armenia,
 } as const
 export type Flags = keyof typeof flags

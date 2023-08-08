@@ -1,0 +1,6 @@
+{
+  "singleQuote": true,
+  "printWidth": 70,
+  "plugins": ["prettier-plugin-svelte"],
+  "semi": false
+}

@@ -1,7 +1,7 @@
 import type {
   Distances,
   Deserialized,
-  StatusAtDistance
+  StatusAtDistance,
 } from '../types'
 import { minutesToDs, secondsToDs } from './index'
 
@@ -24,7 +24,7 @@ export const deserializeData = (data: Distances): Deserialized => {
   const deserialized: Deserialized = {
     contestants: [],
     countries: [],
-    slowestTime: 0
+    slowestTime: 0,
   }
   const countries: string[] = []
   const times: number[] = []
@@ -44,13 +44,13 @@ export const deserializeData = (data: Distances): Deserialized => {
       rank: s.rank,
       wcPts: s.totalWorldCupPoints,
       ncPts: s.totalNationCupPoints,
-      times: [] as number[] | undefined
+      times: [] as number[] | undefined,
     })
     countries.push(
       // @ts-expect-error (due to import of flags)
       s.person.country === 'Czech Republic'
         ? 'Czechia'
-        : s.person.country
+        : s.person.country,
     )
     const time = convertToDs(s.duration)
     if (typeof time !== 'undefined') {
@@ -59,7 +59,7 @@ export const deserializeData = (data: Distances): Deserialized => {
   })
 
   deserialized.slowestTime = Math.max(
-    ...times.filter((n) => typeof n !== 'undefined')
+    ...times.filter((n) => typeof n !== 'undefined'),
   )
 
   const uniqueCountries = [...new Set(countries)]
@@ -71,7 +71,7 @@ export const deserializeData = (data: Distances): Deserialized => {
       const time = convertToDs(status.duration)
       const uuid = status.person.uuid
       const contestant = deserialized.contestants.find(
-        (c) => c.uuid === uuid
+        (c) => c.uuid === uuid,
       )
       if (typeof contestant === 'undefined') continue
       const times = contestant.times
