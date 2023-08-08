@@ -131,19 +131,19 @@
 
 <style>
   .wrapper {
-    padding-top: 10px;
     display: grid;
-    grid-template-columns: 15% 75% 10%;
     grid-template-rows: 15px 15px 100%;
-    height: calc(calc(var(--heightFactor) * 15.5px) + 35px);
-    width: 100%;
-    overflow: hidden;
+    grid-template-columns: 15% 75% 10%;
     background: black;
+    padding-top: 10px;
+    width: 100%;
+    height: calc(calc(var(--heightFactor) * 15.5px) + 35px);
+    overflow: hidden;
   }
   .time {
-    font-size: 12pt;
-    padding: 5px;
     margin-left: 10px;
+    padding: 5px;
+    font-size: 12pt;
     white-space: nowrap;
   }
   .piste {
@@ -151,15 +151,15 @@
     z-index: 2;
   }
   .indicator-labels {
-    grid-area: 1 / 2 / 1 / 2;
-    height: 100%;
     display: grid;
+    position: relative;
     grid-template-columns: 11% 20% 19% 11% 20% 19%;
+    grid-area: 1 / 2 / 1 / 2;
     z-index: 1;
+    height: 100%;
     color: white;
     font-size: 8pt;
     text-align: left;
-    position: relative;
   }
   .indicator-labels .label {
     position: relative;
@@ -173,16 +173,16 @@
     right: -18px;
   }
   .indicators {
-    grid-area: 2 / 2 / 4 / 2;
-    height: 100%;
     display: grid;
     grid-template-columns: 11% 20% 19% 11% 20% 19%;
+    grid-area: 2 / 2 / 4 / 2;
     z-index: 1;
+    height: 100%;
   }
   .check {
+    opacity: 0.5;
     border-right: 1px dotted white;
     height: 100%;
-    opacity: 0.5;
   }
   .check:first-of-type {
     border-left: 1px dashed white;

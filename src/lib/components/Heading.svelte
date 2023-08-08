@@ -16,7 +16,7 @@
     'country',
     'shirtNumber',
     'name',
-    'lastName'
+    'lastName',
   ]
   const dispatch = createEventDispatcher()
 
@@ -77,10 +77,10 @@
     width: 100%;
   }
   .player-controls {
-    width: 100%;
     display: flex;
     justify-content: space-between;
     margin-block: 1rem;
+    width: 100%;
   }
   .scrubber {
     width: 90%;

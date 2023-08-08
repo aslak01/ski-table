@@ -76,27 +76,27 @@
     cursor: pointer;
   }
   .contestant {
-    position: relative;
-    font-size: 8pt;
-    height: var(--line-height);
-    line-height: var(--line-height);
-    width: var(--progress);
     display: flex;
-    align-items: center;
+    position: relative;
     flex-direction: row-reverse;
+    align-items: center;
+    width: var(--progress);
+    height: var(--line-height);
+    font-size: 8pt;
+    line-height: var(--line-height);
   }
   .number {
+    display: flex;
     position: absolute;
     right: -20px;
-    background: var(--indigo-1);
-    border-radius: 999px;
-    color: black;
-    height: var(--line-height);
-    width: var(--line-height);
-    font-size: 7pt;
-    display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
+    border-radius: 999px;
+    background: var(--indigo-1);
+    width: var(--line-height);
+    height: var(--line-height);
+    color: black;
+    font-size: 7pt;
   }
   .number.gold {
     background: gold;
@@ -112,32 +112,32 @@
     right: -80px;
   }
   .track {
-    width: 100%;
     border-block: 1px solid #ffffff80;
+    width: 100%;
     height: 40%;
   }
   .hover .track {
     border-color: var(--indigo-3);
   }
   .hover .number {
-    z-index: 100;
-    font-weight: bold;
     transform: scale(2);
+    z-index: 100;
     transition: transform 0.2s cubic-bezier(0.47, 0, 0.745, 0.715);
+    font-weight: bold;
   }
   .name {
-    white-space: nowrap;
-    color: white;
-    padding-left: 5px;
     padding-right: 5px;
+    padding-left: 5px;
+    color: white;
+    white-space: nowrap;
   }
   .flag {
+    display: flex;
+    flex-shrink: 0;
+    justify-content: center;
+    align-items: center;
     width: var(--line-height);
     height: var(--line-height);
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
   .hover .name {
     font-weight: bold;

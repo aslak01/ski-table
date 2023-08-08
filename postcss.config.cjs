@@ -14,9 +14,9 @@ const config = {
 
     !dev &&
       cssnano({
-        preset: 'default'
-      })
-  ]
+        preset: 'default',
+      }),
+  ],
 }
 
 module.exports = config

@@ -2,7 +2,7 @@ import type { ActionReturn } from 'svelte/types/runtime/action'
 
 export function onhover(
   node: HTMLElement,
-  callback: EventListener
+  callback: EventListener,
 ): ActionReturn {
   node.addEventListener('mouseenter', callback)
   node.addEventListener('mouseleave', callback)
@@ -11,6 +11,6 @@ export function onhover(
     destroy() {
       node.removeEventListener('mouseenter', callback)
       node.removeEventListener('mouseleave', callback)
-    }
+    },
   }
 }
